@@ -12,14 +12,13 @@ def instr_ratings_grab(soup): #FOR ONE COURSE ONLY.
     for prof_name in profs_span:
       profs.append(prof_name.string + " " + ratings.string + " --")
   return profs # in a specific course
-  #  print ratings.string # EACH INDIVIDUAL PROF RATINGS
 
 def course_ratings_grab(link):
   course_ratings = []
   noratings = "0 ratings & Not rated " #MSG to show no ratings for class
   soup = read_site(link)
   
-  instr_ratings = instr_ratings_grab(soup) # Is this even necessary??
+  instr_ratings = instr_ratings_grab(soup)
   # overall_ratings: average rating for class
   overall_rating = soup.find_all('div', 'float-left value')
   # number_ratings: number of ratings for the class
@@ -27,19 +26,14 @@ def course_ratings_grab(link):
   # If rating does exist...
   if (len(overall_rating) > 0):
     content = overall_rating[0].string + "[" + number_ratings[0].string + "] "
-    #content = number_ratings[0].string + " " + overall_rating[0].string + " "
     for x in range(len(instr_ratings)):
       content += instr_ratings[x] + " "
     course_ratings.append(content)
-    #print "# of Ratings: " + number_ratings[0].string
-    #print "Overall rating: " + overall_rating[0].string
   else: # If doesn't exist, use norating
     content = ""
     for y in range(len(instr_ratings)):
       content += instr_ratings[y]
     course_ratings.append(noratings + " " + content)
-    #print "# Ratings = 0"
-    #print "Not rated"
   return course_ratings
 
 def course_info_grab(soup, file):
@@ -47,21 +41,14 @@ def course_info_grab(soup, file):
   ratings = "#ratings"
   li = soup.find_all('li')[5:]
   ## Remove top LI tags that dont relate to classes
-  #li = li[5:]
   course_desc = course_desc_grab(li)
   course_name = course_name_grab(li)
   course_links = course_links_grab(li)
- # course_profs = instr_ratings_grab(soup)
   course_ratings = []
   for links in course_links: #For each COURSE, navigate through the link.
     links = url + links + ratings
     course_ratings.append(course_ratings_grab(links))
   file_write(file, course_name, course_desc, course_ratings)
-  #file_write(file, course_name, course_desc, course_ratings, course_profs)
-  #print course_desc
-  #print course_name
-  #print course_links
-  #print course_ratings
 
 def course_desc_grab(li):
   course_desc = [lis.a.next_element.next_element for lis in li]
@@ -77,7 +64,6 @@ def course_links_grab(li):
 
 def dept_list_grab(soup, file):
   dept_list = []
-  #depts = soup.find_all('li')[5:] # INCLUDES AC/HONOR/RC
   depts = soup.find_all('li')[8:]
   dept_links = course_links_grab(depts)
   file.write("Course Name, Course Desc, Num of Ratings, Overall Rating, Prof Name, Prof Rating\n")
@@ -111,8 +97,6 @@ def file_open():
   return file
 
 def file_write(file, course_name, course_desc, course_ratings):
-  # Comment out only when using ALL DEPARTMENTS
-  # file.write("Course Name, Course Desc, Num of Ratings, Overall Rating, Prof Name, Prof Rating\n")
   file.write("Course Name - Course Desc, OverallRating[Num of Ratings], Prof Name, Prof Rating")
   file.write("***--------------------****\n")
   file.write("\n")
@@ -131,8 +115,6 @@ def dept_prompt():
 
 url_to_open = "http://www.ninjacourses.com/explore/1/department/"
 dept = dept_prompt()
-#url_to_open = "http://www.ninjacourses.com/explore/1" 
 file = file_open()
 soup = read_site(url_to_open + dept)
-#dept_list_grab(soup, file)
 course_info_grab(soup, file)
