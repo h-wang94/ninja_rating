@@ -12,7 +12,6 @@ def instr_ratings_grab(soup): #FOR ONE COURSE ONLY.
     for prof_name in profs_span:
       profs.append(prof_name.string + " " + ratings.string + " --")
   return profs # in a specific course
-  #  print ratings.string # EACH INDIVIDUAL PROF RATINGS
 
 def course_ratings_grab(link):
   course_ratings = []
@@ -27,19 +26,14 @@ def course_ratings_grab(link):
   # If rating does exist...
   if (len(overall_rating) > 0):
     content = overall_rating[0].string + "[" + number_ratings[0].string + "] "
-    #content = number_ratings[0].string + " " + overall_rating[0].string + " "
     for x in range(len(instr_ratings)):
       content += instr_ratings[x] + " "
     course_ratings.append(content)
-    #print "# of Ratings: " + number_ratings[0].string
-    #print "Overall rating: " + overall_rating[0].string
   else: # If doesn't exist, use norating
     content = ""
     for y in range(len(instr_ratings)):
       content += instr_ratings[y]
     course_ratings.append(noratings + " " + content)
-    #print "# Ratings = 0"
-    #print "Not rated"
   return course_ratings
 
 def course_info_grab(soup, file):
@@ -51,17 +45,11 @@ def course_info_grab(soup, file):
   course_desc = course_desc_grab(li)
   course_name = course_name_grab(li)
   course_links = course_links_grab(li)
- # course_profs = instr_ratings_grab(soup)
   course_ratings = []
   for links in course_links: #For each COURSE, navigate through the link.
     links = url + links + ratings
     course_ratings.append(course_ratings_grab(links))
   file_write(file, course_name, course_desc, course_ratings)
-  #file_write(file, course_name, course_desc, course_ratings, course_profs)
-  #print course_desc
-  #print course_name
-  #print course_links
-  #print course_ratings
 
 def course_desc_grab(li):
   course_desc = [lis.a.next_element.next_element for lis in li]
@@ -125,21 +113,25 @@ def dept_prompt():
   return raw_input("What department do you want to get information from? Ex: COMPSCI\n")
 
 def site_prompt():
-  return raw_input("What UC? ex: Berkeley, Davis\n")
+  return raw_input("What UC? (Berkeley, Merced, Davis, Santa Barbara, LA)\n")
 
 def pick_uc(uc):
   if (uc == "Berkeley"):
     return str(1)
+  if (uc == "Merced"):
+    return str(2)
   if (uc == "Davis"):
     return str(3)
+  if (uc == "Santa Barbara"):
+    return str(4)
+  if (uc == "LA"):
+    return str(5)
 
 ninja = "http://www.ninjacourses.com/explore/"
-#url_to_open = "http://www.ninjacourses.com/explore/1/department/"
 uc = site_prompt()
 uc = pick_uc(uc)
 dept = dept_prompt()
 url_to_open = ninja + uc + "/department/" 
 file = file_open()
 soup = read_site(url_to_open + dept)
-#dept_list_grab(soup, file)
 course_info_grab(soup, file)

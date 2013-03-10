@@ -1,4 +1,7 @@
+venv
+*.pyc
 *.py[cod]
+
 
 # C extensions
 *.so
