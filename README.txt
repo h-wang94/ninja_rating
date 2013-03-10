@@ -1,6 +1,6 @@
 to run, you must have BeautifulSoup and python!!!
 
-just type in commandprompt 
+just type in terminal
 
 python all_ucs.py 
 
